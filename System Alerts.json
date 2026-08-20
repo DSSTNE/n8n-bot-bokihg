@@ -1,0 +1,72 @@
+{
+  "name": "System Alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "6f0b4a72-78dc-4db2-a129-a55483782bf2",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "694916766",
+        "text": "=🚨 <b>Помилка у воркфлоу!</b>  <b>Воркфлоу:</b> {{ $json.workflow.name }} <b>Нода:</b> {{ $json.execution.lastNodeExecuted }} <b>Текст помилки:</b> {{ $json.error.message }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "6aae1402-956e-4182-b524-bca11b6a563d",
+      "name": "Send a text message",
+      "webhookId": "0738fc76-6a07-4385-bd66-61e6fb8ee319",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Stockholm",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "892ed590-d79e-48bb-ba6b-a9c44ec9eccf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bf0c981cadaa1cf4940205cfef5f7c672982f38de4f04bf5a516e45df70e03d4"
+  },
+  "nodeGroups": [],
+  "id": "6jnon7nvbQx8yusB",
+  "tags": []
+}

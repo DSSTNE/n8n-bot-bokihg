@@ -1,0 +1,380 @@
+{
+  "name": "Daily Reminders",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        64
+      ],
+      "id": "2080a3df-e5d5-45af-b573-6e43e0fff49e",
+      "name": "Every Day at 9:00"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        64
+      ],
+      "id": "e62ab83c-59d0-4034-8ed9-4bf62c4328ef",
+      "name": "Get All Bookings",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst tomorrow = DateTime.now().setZone('Europe/Stockholm').plus({ days: 1 });\n\nfunction parseDate(str) {\n  const parts = String(str || '').trim().split('.');\n  if (parts.length !== 3) return null;\n  const [d, m, y] = parts.map(p => parseInt(p, 10));\n  if (!d || !m || !y) return null;\n  return { d, m, y };\n}\n\nconst toRemind = rows.filter(r => {\n  const parsed = parseDate(r['Date']);\n  if (!parsed) return false;\n  const dateMatches = parsed.d === tomorrow.day && parsed.m === tomorrow.month && parsed.y === tomorrow.year;\n  const notCancelled = (r['Status'] || 'Confirmed') !== 'Cancelled';\n  const notReminded = String(r['Reminder Sent'] || '').toUpperCase() !== 'TRUE';\n  return dateMatches && notCancelled && notReminded;\n});\n\nreturn toRemind.map(r => ({ json: r }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        64
+      ],
+      "id": "535b9bb7-b382-42aa-88f4-848045846e12",
+      "name": "Filter Tomorrow Bookings",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Chat ID",
+              "lookupValue": "={{ $json['Telegram Chat ID'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1600,
+        64
+      ],
+      "id": "aa53fa31-aade-44d7-b91c-15bcbbd0ff9c",
+      "name": "Get Language",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const bookingData = $('Filter Tomorrow Bookings').item.json;\nreturn {\n  ...bookingData,\n  Language: $json.Language\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        64
+      ],
+      "id": "fd084777-a680-4755-b761-5218deb981fa",
+      "name": "Restore Booking Data"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json['Telegram Chat ID'] }}",
+        "text": "={{ $json.Language === 'en' ? `Reminder: tomorrow at ${$json['Time']} you have ${$json['Service']} 🙂\\nIf your plans have changed — tap «📋 My bookings» in the menu to cancel.` : `Нагадуємо: завтра о ${$json['Time']} у вас ${$json['Service']} 🙂\\nЯкщо плани змінились — натисніть «📋 Мої записи» в меню, щоб скасувати.` }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        64
+      ],
+      "id": "b9c27296-34b5-43c9-bdd3-57dc96c5c7b8",
+      "name": "Send Reminder",
+      "webhookId": "2e592523-1c69-4351-9c57-5e2efe3a33d1",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Calendar Event ID": "={{ $json['Calendar Event ID'] }}",
+            "Reminder Sent": "TRUE"
+          },
+          "matchingColumns": [
+            "Calendar Event ID"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telegram Chat ID",
+              "displayName": "Telegram Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Calendar Event ID",
+              "displayName": "Calendar Event ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reminder Sent",
+              "displayName": "Reminder Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2320,
+        64
+      ],
+      "id": "a603fd7d-595e-42f4-ac11-8cc570039f69",
+      "name": "Mark Reminder Sent",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every Day at 9:00": {
+      "main": [
+        [
+          {
+            "node": "Get All Bookings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Bookings": {
+      "main": [
+        [
+          {
+            "node": "Filter Tomorrow Bookings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Tomorrow Bookings": {
+      "main": [
+        [
+          {
+            "node": "Get Language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Language": {
+      "main": [
+        [
+          {
+            "node": "Restore Booking Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Booking Data": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder": {
+      "main": [
+        [
+          {
+            "node": "Mark Reminder Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Stockholm",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "9cbf74ba-7acc-4147-af56-4ddbeb57e970",
+  "meta": {
+    "instanceId": "bf0c981cadaa1cf4940205cfef5f7c672982f38de4f04bf5a516e45df70e03d4"
+  },
+  "nodeGroups": [],
+  "id": "QWRZiFDukSOwxxnM",
+  "tags": []
+}

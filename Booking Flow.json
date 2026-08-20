@@ -1,0 +1,1568 @@
+{
+  "name": "Booking Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        1264
+      ],
+      "id": "9b96cf05-18bd-49f5-85b1-ae2eedaee3c9",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Chat ID",
+              "lookupValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        1264
+      ],
+      "id": "b3ee881d-dc3a-4479-8453-1f779d1f5eec",
+      "name": "Get Language",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('When Executed by Another Workflow').item.json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        1264
+      ],
+      "id": "4f825210-d8f3-41fc-9f3b-14f0014724e9",
+      "name": "Restore Trigger Data"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "init_booking",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "booking_service",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "booking_date",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "booking_time",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "booking_name",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.State }}",
+                    "rightValue": "booking_phone",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        1264
+      ],
+      "id": "26c001bc-2db1-45ce-891c-d2fc9745deb6",
+      "name": "Route by State"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $json.chat_id }}",
+            "State": "booking_service"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        656
+      ],
+      "id": "ad9f5928-22f6-48b8-bf76-f53f5ffa5866",
+      "name": "Set State: Service",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Which service are you interested in? Choose from the menu below:' : 'Яка послуга вас цікавить? Оберіть з меню нижче:' }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Automation' : 'Автоматизація' }}",
+                    "additionalFields": {}
+                  },
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Audit' : 'Аудит' }}",
+                    "additionalFields": {}
+                  },
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? 'CRM/chatbot' : 'CRM/чат-бота' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true,
+          "one_time_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        656
+      ],
+      "id": "b0dda1f3-395f-4afc-9252-2a096dfe630b",
+      "name": "Ask Service",
+      "webhookId": "a9164b4a-4375-4170-893f-4f4c7620d97f",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $json.chat_id }}",
+            "Temp Field": "={{ $json.text }}",
+            "State": "booking_date"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        864
+      ],
+      "id": "03ba4b93-db90-4aa3-8423-a228091536cb",
+      "name": "Save Service",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Great! What date would you like to book? Enter it in DD.MM.YYYY format (e.g., 28.07.2026):' : 'Чудово! На яку дату бажаєте записатись? Введіть у форматі ДД.ММ.РРРР (наприклад, 28.07.2026):' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        864
+      ],
+      "id": "11bd613d-2a73-4f95-97bb-87319fa61619",
+      "name": "Ask Date",
+      "webhookId": "666a46f9-7563-4274-ada4-f470cdf48ce8",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $json.chat_id }}",
+            "Temp Date": "={{ $json.text }}",
+            "State": "booking_time"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        1056
+      ],
+      "id": "75518c8b-97e2-45c9-84f2-34597c4e7076",
+      "name": "Save Date",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'What time? Enter it in HH:MM format (e.g., 14:00), working hours are 9:00–18:00:' : 'На яку годину? Введіть у форматі ГГ:ХХ (наприклад, 14:00), робочі години з 9:00 до 18:00:' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        1056
+      ],
+      "id": "315933a5-b51e-4d9c-a958-4707b8b368f8",
+      "name": "Ask Time",
+      "webhookId": "4f55ba4c-6686-4dbd-937e-2210df385998",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const triggerData = $('When Executed by Another Workflow').item.json;\nconst dateStr = triggerData.temp_date || '';\nconst timeStr = triggerData.text || '';\n\nconst dateParts = dateStr.split('.');\nconst timeParts = timeStr.split(':');\n\nlet isValidDate = dateParts.length === 3 && timeParts.length === 2;\nlet startDateTime = '';\nlet endDateTime = '';\n\nif (isValidDate) {\n  const [day, month, year] = dateParts;\n  const [hour, minute] = timeParts;\n  const startDate = DateTime.fromObject(\n    { year: Number(year), month: Number(month), day: Number(day), hour: Number(hour), minute: Number(minute) },\n    { zone: 'Europe/Stockholm' }\n  );\n\n  if (!startDate.isValid) {\n    isValidDate = false;\n  } else {\n    const endDate = startDate.plus({ minutes: 60 });\n    startDateTime = startDate.toUTC().toISO();\n    endDateTime = endDate.toUTC().toISO();\n  }\n}\n\nreturn {\n  ...triggerData,\n  startDateTime,\n  endDateTime,\n  isValidDate\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        1264
+      ],
+      "id": "3ddd913c-a162-469b-95de-91c52fb9229c",
+      "name": "Build DateTime",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a6",
+              "leftValue": "={{ $json.isValidDate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1264,
+        1264
+      ],
+      "id": "3920837a-f5f3-4461-a3fa-5579f3da35e6",
+      "name": "Is Date Valid?"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? \"Couldn't recognize the date/time 😔 Please check the format (date: DD.MM.YYYY, time: HH:MM) and try entering the time again:\" : 'Не вдалося розпізнати дату/час 😔 Перевірте формат (дата: ДД.ММ.РРРР, час: ГГ:ХХ) і спробуйте ввести час ще раз:' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1504,
+        1408
+      ],
+      "id": "a17e2c9a-240a-4795-95d2-b0107b68a6a4",
+      "name": "Invalid DateTime Message",
+      "webhookId": "37fbe584-f9c4-4d00-9bbf-36041d85d540",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "denisperepechay@gmail.com",
+          "mode": "list",
+          "cachedResultName": "denisperepechay@gmail.com"
+        },
+        "limit": 5,
+        "timeMin": "={{ $json.startDateTime }}",
+        "timeMax": "={{ $json.endDateTime }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        1120
+      ],
+      "id": "83e68675-3e8a-4556-baba-1fc2764b29a5",
+      "name": "Check Availability",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "8rzn9mL4EoZjzIQO",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst hasEvent = items.some(item => \n  item.json && item.json.id && (item.json.start?.dateTime || item.json.start?.date)\n);\nconst originalData = $('Build DateTime').item.json;\nreturn [{ json: { ...originalData, isBusy: hasEvent } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1120
+      ],
+      "id": "829d2837-0e1c-49b4-a6ec-6b65908bed96",
+      "name": "Check Busy Flag"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af",
+              "leftValue": "={{ $json.isBusy }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a0",
+              "leftValue": "={{ $json.start?.dateTime || $json.start?.date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2000,
+        1120
+      ],
+      "id": "e662ff97-6867-475f-93b5-1b6677d8bc5d",
+      "name": "Is Slot Busy?",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Unfortunately, that time is already taken 😔 Please choose another time (in HH:MM format):' : 'На жаль, цей час вже зайнятий 😔 Оберіть, будь ласка, інший час (у форматі ГГ:ХХ):' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2272,
+        960
+      ],
+      "id": "8d77b4c0-f9ad-48d1-8401-f188ee768c72",
+      "name": "Ask Another Time",
+      "webhookId": "0b7229ba-9baf-4589-ad3b-d40c34f4e181",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+            "State": "booking_name",
+            "Temp Time": "={{ $('When Executed by Another Workflow').item.json.text }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2272,
+        1264
+      ],
+      "id": "b81dd2e3-5642-4be9-a0c4-6e517f84b4a0",
+      "name": "Save Time -> Name",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Please enter your name:' : 'Введіть, будь ласка, ваше ім\\'я:' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2512,
+        1264
+      ],
+      "id": "8e16f819-522d-4c39-8fab-e9992a1dceec",
+      "name": "Ask Booking Name",
+      "webhookId": "bf1ed8f9-aa4d-4385-ac06-f6560ab2e006",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $json.chat_id }}",
+            "Temp Name": "={{ $json.text }}",
+            "State": "booking_phone"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        1456
+      ],
+      "id": "7955a729-1a76-449d-b220-aa289988ee54",
+      "name": "Save Booking Name",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? 'Thank you! Please enter your phone number:' : 'Дякую! Введіть, будь ласка, ваш номер телефону:' }}",
+        "replyMarkup": "replyKeyboardRemove",
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        1456
+      ],
+      "id": "d2b1c985-09d2-436a-bbbf-800fb30b744c",
+      "name": "Ask Booking Phone",
+      "webhookId": "d29e632e-bb89-4970-9125-bb32d6889baf",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const triggerData = $('When Executed by Another Workflow').item.json;\nconst dateStr = triggerData.temp_date || '';\nconst timeStr = triggerData.temp_time || '';\n\nconst dateParts = dateStr.split('.');\nconst timeParts = timeStr.split(':');\n\nconst startDate = DateTime.fromObject(\n  { year: Number(dateParts[2]), month: Number(dateParts[1]), day: Number(dateParts[0]), hour: Number(timeParts[0]), minute: Number(timeParts[1]) },\n  { zone: 'Europe/Stockholm' }\n);\n\nconst endDate = startDate.plus({ minutes: 60 });\n\nreturn {\n  ...triggerData,\n  startDateTime: startDate.toUTC().toISO(),\n  endDateTime: endDate.toUTC().toISO(),\n  phone_to_save: triggerData.text\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        1664
+      ],
+      "id": "91843446-841e-4413-8c34-da922fcbb9f0",
+      "name": "Build Final DateTime",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "denisperepechay@gmail.com",
+          "mode": "list",
+          "cachedResultName": "denisperepechay@gmail.com"
+        },
+        "start": "={{ $json.startDateTime }}",
+        "end": "={{ $json.endDateTime }}",
+        "additionalFields": {
+          "summary": "={{ $('When Executed by Another Workflow').item.json.temp_field }} — {{ $('When Executed by Another Workflow').item.json.temp_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        1664
+      ],
+      "id": "6ca96951-de09-4e91-86cb-ac4c13725c76",
+      "name": "Create Booking Event",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "8rzn9mL4EoZjzIQO",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now }}",
+            "Name": "={{ $('When Executed by Another Workflow').item.json.temp_name }}",
+            "Phone": "={{ $('Build Final DateTime').item.json.phone_to_save }}",
+            "Service": "={{ $('When Executed by Another Workflow').item.json.temp_field }}",
+            "Date": "={{ $('When Executed by Another Workflow').item.json.temp_date }}",
+            "Time": "={{ $('When Executed by Another Workflow').item.json.temp_time }}",
+            "Telegram Chat ID": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+            "Calendar Event ID": "={{ $('Create Booking Event').item.json.id }}",
+            "Reminder Sent": "FALSE",
+            "Status": "Confirmed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telegram Chat ID",
+              "displayName": "Telegram Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Calendar Event ID",
+              "displayName": "Calendar Event ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder Sent",
+              "displayName": "Reminder Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1504,
+        1664
+      ],
+      "id": "36d7e5e6-d090-44fc-b292-1c72b3073e1e",
+      "name": "Save Booking",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "694916766",
+        "text": "=📅 Нове бронювання! \nІм'я: {{ $('When Executed by Another Workflow').item.json.temp_name }} \nТелефон: {{ $('Build Final DateTime').item.json.phone_to_save }} \nПослуга: {{ $('When Executed by Another Workflow').item.json.temp_field }} \nДата: {{ $('When Executed by Another Workflow').item.json.temp_date }} \nЧас: {{ $('When Executed by Another Workflow').item.json.temp_time }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        1664
+      ],
+      "id": "508f68d6-018f-461b-a722-4395d457598a",
+      "name": "Notify Admin Booking",
+      "alwaysOutputData": true,
+      "webhookId": "73f34afa-7638-482a-a078-d3119b6467ed",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+        "text": "={{ $('Get Language').item.json.Language === 'en' ? `Booked! ✅ We're looking forward to seeing you on ${$('When Executed by Another Workflow').item.json.temp_date} at ${$('When Executed by Another Workflow').item.json.temp_time}.` : `Заброньовано! ✅ Чекаємо на вас ${$('When Executed by Another Workflow').item.json.temp_date} о ${$('When Executed by Another Workflow').item.json.temp_time}.` }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? '📝 Leave a request' : '📝 Залишити заявку' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? '📅 Book a service' : '📅 Записатись на послугу' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Language').item.json.Language === 'en' ? '📋 My bookings' : '📋 Мої записи' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        1664
+      ],
+      "id": "ef2520f0-1d90-45a9-9d04-85c7fb2ab5e6",
+      "name": "Confirm Booking to Client",
+      "alwaysOutputData": true,
+      "webhookId": "4188ecc9-86b5-43bc-b781-56cd0957ba61",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('When Executed by Another Workflow').item.json.chat_id }}",
+            "State": "={{ '' }}",
+            "Temp Name": "={{ '' }}",
+            "Temp Phone": "={{ '' }}",
+            "Temp Field": "={{ '' }}",
+            "Temp Date": "={{ '' }}",
+            "Temp Time": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2272,
+        1664
+      ],
+      "id": "a2c13a40-83de-45e8-b32f-39ba3430ca05",
+      "name": "Reset Session Booking",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Language": {
+      "main": [
+        [
+          {
+            "node": "Restore Trigger Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Trigger Data": {
+      "main": [
+        [
+          {
+            "node": "Route by State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by State": {
+      "main": [
+        [
+          {
+            "node": "Set State: Service",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Service",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build DateTime",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Booking Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Final DateTime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set State: Service": {
+      "main": [
+        [
+          {
+            "node": "Ask Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Service": {
+      "main": [
+        [
+          {
+            "node": "Ask Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Date": {
+      "main": [
+        [
+          {
+            "node": "Ask Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build DateTime": {
+      "main": [
+        [
+          {
+            "node": "Is Date Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Date Valid?": {
+      "main": [
+        [
+          {
+            "node": "Check Availability",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid DateTime Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Availability": {
+      "main": [
+        [
+          {
+            "node": "Check Busy Flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Busy Flag": {
+      "main": [
+        [
+          {
+            "node": "Is Slot Busy?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Slot Busy?": {
+      "main": [
+        [
+          {
+            "node": "Ask Another Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Time -> Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Time -> Name": {
+      "main": [
+        [
+          {
+            "node": "Ask Booking Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Booking Name": {
+      "main": [
+        [
+          {
+            "node": "Ask Booking Phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Final DateTime": {
+      "main": [
+        [
+          {
+            "node": "Create Booking Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Booking Event": {
+      "main": [
+        [
+          {
+            "node": "Save Booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Booking": {
+      "main": [
+        [
+          {
+            "node": "Notify Admin Booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Admin Booking": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Booking to Client": {
+      "main": [
+        [
+          {
+            "node": "Reset Session Booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Stockholm",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "608691fd-6e5c-4c93-a775-7f0e36920790",
+  "meta": {
+    "instanceId": "bf0c981cadaa1cf4940205cfef5f7c672982f38de4f04bf5a516e45df70e03d4"
+  },
+  "nodeGroups": [],
+  "id": "ACgRZcCDP6nIx0Gs",
+  "tags": []
+}

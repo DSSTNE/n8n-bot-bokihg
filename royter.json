@@ -1,0 +1,3303 @@
+{
+  "name": "royter",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -4880,
+        14432
+      ],
+      "id": "104c0eca-26df-4bc9-b91b-75e5e27aff00",
+      "name": "Telegram Trigger",
+      "webhookId": "cf5663d4-e36a-462d-9eb9-dbdf6a7573c7",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst updateId = String(item.json.update_id);\nconst chatId = String(item.json.message?.chat?.id || '');\n\nconst key = `tg_${chatId}_${updateId}`;\nif (staticData[key]) return [];\nstaticData[key] = Date.now();\n\nconst now = Date.now();\nfor (const k of Object.keys(staticData)) {\n  if (k.startsWith('tg_') && now - staticData[k] > 10 * 60 * 1000) delete staticData[k];\n}\nreturn [item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4656,
+        14432
+      ],
+      "id": "38909b6c-e1b2-42d0-bddd-7098a8938f51",
+      "name": "Drop Duplicate Update"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Chat ID",
+              "lookupValue": "={{ $json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4432,
+        14432
+      ],
+      "id": "eb197cee-b9aa-47c7-8800-8af7eae19b9b",
+      "name": "Get Session",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json[\"Chat ID\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4208,
+        14432
+      ],
+      "id": "aac9c47a-9c07-40bf-ae97-b3c5e200f632",
+      "name": "Session Exists?"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "await_language",
+            "GDPR Accepted": "FALSE"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Update ID",
+              "displayName": "Last Update ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Action",
+              "displayName": "Pending Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3984,
+        14528
+      ],
+      "id": "f3d69938-6c45-4c30-81d2-d17f31ead850",
+      "name": "Create Session",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Get Session').item.json.Language === 'en' ? 'Welcome! 👋 Please choose an action from the menu below:' : 'Вітаю! 👋 Оберіть, будь ласка, дію з меню нижче:' }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📝 Leave a request' : '📝 Залишити заявку' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📅 Book a service' : '📅 Записатись на послугу' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📋 My bookings' : '📋 Мої записи' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3088,
+        14688
+      ],
+      "id": "dba8f7ee-4f88-4300-9142-6541b3aec5c3",
+      "name": "Send Menu",
+      "alwaysOutputData": true,
+      "webhookId": "4646bbc0-7d79-4628-89ae-fc5dc3e243ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json[\"Last Update ID\"] }}",
+              "rightValue": "={{ $('Telegram Trigger').item.json.update_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3984,
+        14336
+      ],
+      "id": "e04227ca-e902-447f-b648-47f6098bb470",
+      "name": "Is Duplicate DB?",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Last Update ID": "={{ $('Telegram Trigger').item.json.update_id }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Update ID",
+              "displayName": "Last Update ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Action",
+              "displayName": "Pending Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3760,
+        14336
+      ],
+      "id": "63258ed8-9863-495f-82d0-5c861448914f",
+      "name": "Mark Update Processed",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    },
+                    "id": "f4dd480d-512b-4804-862c-20b98034d138"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "menu_choice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "await_gdpr_lead",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6c18ff80-2c18-487b-aba3-5beddcdae3d1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "awaiting_gdpr_lead"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "await_gdpr_booking",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "402f02aa-e816-4bc5-a23e-681c345a3278"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "awaiting_gdpr_booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "lead_",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "0a42e97b-ab8e-4688-b195-534487159d46"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "ongoing_lead"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "init_lead",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "21121cb9-434a-4fcc-bd2c-b64004a621e6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ongoing_lead"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "booking_",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "70a9ae48-6770-48ce-99f4-33c734d1c5f7"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "ongoing_booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "init_booking",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "fc6eeabc-6b19-4678-847c-313262ab1a42"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ongoing_booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f2891de1-f95d-4d9c-81c4-c07aab6f164b",
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "cancel_confirm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ongoing_cancel"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1f95a4ee-24b0-40b8-9eb3-e1787f9bd36b",
+                    "leftValue": "={{ $('Get Session').item.json.State }}",
+                    "rightValue": "await_language",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "awaiting_language"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3504,
+        13872
+      ],
+      "id": "04db86a0-ce95-4c4d-a349-fe4ba5cc7b33",
+      "name": "Route State"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📝 Залишити заявку",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7ef1e6ba-7cd6-4b76-b6b9-d86033cf1ecf"
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📝 Leave a request",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7ef1e6ba-lead-en-0001"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "start_lead"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📅 Записатись на послугу",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c4e114bd-4e21-4ea0-8a4a-fd9017a10677"
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📅 Book a service",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c4e114bd-booking-en-0001"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "start_booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "73984048-c711-4a34-b10f-039ad1ad7c03",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📋 Мої записи",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  },
+                  {
+                    "id": "73984048-cancel-en-0001",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "📋 My bookings",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "start_cancel"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3616,
+        13456
+      ],
+      "id": "15531041-efe5-4f55-9619-822812713213",
+      "name": "Route Menu Choice"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ String($('Get Session').item.json[\"GDPR Accepted\"]).toUpperCase() }}",
+              "rightValue": "TRUE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2864,
+        12560
+      ],
+      "id": "ccc9a3b1-781f-4121-b555-8145882566e0",
+      "name": "Check GDPR Lead"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ String($('Get Session').item.json[\"GDPR Accepted\"]).toUpperCase() }}",
+              "rightValue": "TRUE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2864,
+        12848
+      ],
+      "id": "1c88d432-aa62-457d-95bf-50acddd51bbe",
+      "name": "Check GDPR Booking"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "await_gdpr_lead"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2640,
+        12512
+      ],
+      "id": "e439a43b-b99c-476b-a600-31f25da405e6",
+      "name": "Set await_gdpr_lead",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "await_gdpr_booking"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2640,
+        12960
+      ],
+      "id": "653bd496-8eb4-423e-ab86-f366786418cf",
+      "name": "Set await_gdpr_booking",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Get Session').item.json.Language === 'en' ? 'Before continuing, we need your consent to process personal data (name, phone) according to our privacy policy.' : 'Перш ніж продовжити, потрібна ваша згода на обробку персональних даних (імені, телефону) відповідно до політики конфіденційності.' }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '✅ Yes' : '✅ Так' }}",
+                    "additionalFields": {}
+                  },
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '❌ No' : '❌ Ні' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true,
+          "one_time_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2416,
+        12576
+      ],
+      "id": "bb722a31-2529-4a98-9f2d-ec9948379bc0",
+      "name": "Ask GDPR",
+      "webhookId": "590bebde-9693-4f6b-8fd8-0d4b8086aeeb",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "✅ Так",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "✅ Yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "agree"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "❌ Ні",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "❌ No",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "decline"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3088,
+        13136
+      ],
+      "id": "a451eedf-3062-4a56-a6b2-984de6924bdf",
+      "name": "Handle GDPR Lead"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "✅ Так",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "✅ Yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "agree"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "❌ Ні",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "❌ No",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "decline"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3088,
+        13584
+      ],
+      "id": "5ac5b33b-d61f-4627-a77e-4e431864d362",
+      "name": "Handle GDPR Booking"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "init_lead",
+            "GDPR Accepted": "TRUE"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2864,
+        13088
+      ],
+      "id": "86b1db7c-a50d-4f56-8fff-9fd8ca5e3532",
+      "name": "Set init_lead",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "init_booking",
+            "GDPR Accepted": "TRUE"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2864,
+        13776
+      ],
+      "id": "6ba8e28d-d8c7-4107-aa54-02fc5fe7fa6c",
+      "name": "Set init_booking",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2864,
+        13328
+      ],
+      "id": "3d6d4a08-7905-41c7-9bfc-3211e8583e7b",
+      "name": "Reset On Decline",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Get Session').item.json.Language === 'en' ? \"Alright 🙏 Without consent we can't save your contact details. Choose an action from the menu below:\" : 'Добре 🙏 Без згоди ми не можемо зберегти ваші контактні дані. Оберіть дію з меню нижче:' }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📝 Leave a request' : '📝 Залишити заявку' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📅 Book a service' : '📅 Записатись на послугу' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📋 My bookings' : '📋 Мої записи' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2640,
+        13440
+      ],
+      "id": "54dea28a-9d70-46c7-b4a8-4567b3134e7c",
+      "name": "Consent Declined Msg",
+      "webhookId": "1484778e-5084-40d2-9519-1cf8cdecead7",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Get Session').item.json.Language === 'en' ? 'Please use the buttons at the bottom of the screen 👇: «✅ Yes» or «❌ No».' : 'Будь ласка, використайте кнопки внизу екрана 👇: «✅ Так» або «❌ Ні».' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2864,
+        13520
+      ],
+      "id": "81f7ff5a-c389-49c0-933c-7db8062fa0c0",
+      "name": "Invalid GDPR Input",
+      "webhookId": "465d6f2c-9fa1-4cf6-a08f-3bf6d8ec5277",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Get Session').item.json.Language === 'en' ? \"Sorry, I didn't understand 🤔 Please choose an action from the menu below:\" : 'Вибачте, я не зрозумів 🤔 Оберіть, будь ласка, дію з меню нижче:' }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📝 Leave a request' : '📝 Залишити заявку' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📅 Book a service' : '📅 Записатись на послугу' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Get Session').item.json.Language === 'en' ? '📋 My bookings' : '📋 Мої записи' }}",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3088,
+        13840
+      ],
+      "id": "af1b721c-1712-48c2-b74e-05b880268e74",
+      "name": "Send Unknown Input Menu",
+      "alwaysOutputData": true,
+      "webhookId": "6efc64e3-1b14-453b-b95e-e347627c5d37",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "v2",
+              "name": "text",
+              "value": "={{ ['✅ Так','✅ Yes'].includes($('Telegram Trigger').item.json.message.text) ? '' : $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "v3",
+              "name": "State",
+              "value": "init_lead",
+              "type": "string"
+            },
+            {
+              "id": "v4",
+              "name": "temp_name",
+              "value": "={{ $('Get Session').item.json[\"Temp Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v5",
+              "name": "temp_phone",
+              "value": "={{ $('Get Session').item.json[\"Temp Phone\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2640,
+        12768
+      ],
+      "id": "bcc2e746-f93e-439b-a332-b0fea168d25a",
+      "name": "Prepare Lead Data"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "7JmrRaIbbBWSb4mT",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/7JmrRaIbbBWSb4mT",
+          "cachedResultName": "Lead Flow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -2416,
+        13328
+      ],
+      "id": "68388bff-6453-43c1-94f0-ff0d16a4c8e5",
+      "name": "Call Lead Flow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "v2",
+              "name": "text",
+              "value": "={{ ['✅ Так','✅ Yes'].includes($('Telegram Trigger').item.json.message.text) ? '' : $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "v3",
+              "name": "State",
+              "value": "init_booking",
+              "type": "string"
+            },
+            {
+              "id": "v4",
+              "name": "temp_name",
+              "value": "={{ $('Get Session').item.json[\"Temp Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v5",
+              "name": "temp_phone",
+              "value": "={{ $('Get Session').item.json[\"Temp Phone\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v6",
+              "name": "temp_field",
+              "value": "={{ $('Get Session').item.json[\"Temp Field\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v7",
+              "name": "temp_date",
+              "value": "={{ $('Get Session').item.json[\"Temp Date\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v8",
+              "name": "temp_time",
+              "value": "={{ $('Get Session').item.json[\"Temp Time\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2640,
+        13152
+      ],
+      "id": "8d35f573-074d-4c72-8c72-3b6b02a672c6",
+      "name": "Prepare Booking Data"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ACgRZcCDP6nIx0Gs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ACgRZcCDP6nIx0Gs",
+          "cachedResultName": "Booking Flow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -2416,
+        13664
+      ],
+      "id": "493aa411-fbcc-4a7e-9a99-e5f620dad7c0",
+      "name": "Call Booking Flow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "v2",
+              "name": "text",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "v3",
+              "name": "State",
+              "value": "={{ $('Get Session').item.json.State }}",
+              "type": "string"
+            },
+            {
+              "id": "v4",
+              "name": "temp_name",
+              "value": "={{ $('Get Session').item.json[\"Temp Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v5",
+              "name": "temp_phone",
+              "value": "={{ $('Get Session').item.json[\"Temp Phone\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2640,
+        14032
+      ],
+      "id": "adea09d3-0663-409b-a9ab-2ef751a2e5d5",
+      "name": "Prepare Ongoing Lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "v2",
+              "name": "text",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "v3",
+              "name": "State",
+              "value": "={{ $('Get Session').item.json.State }}",
+              "type": "string"
+            },
+            {
+              "id": "v4",
+              "name": "temp_name",
+              "value": "={{ $('Get Session').item.json[\"Temp Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v5",
+              "name": "temp_phone",
+              "value": "={{ $('Get Session').item.json[\"Temp Phone\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v6",
+              "name": "temp_field",
+              "value": "={{ $('Get Session').item.json[\"Temp Field\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v7",
+              "name": "temp_date",
+              "value": "={{ $('Get Session').item.json[\"Temp Date\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "v8",
+              "name": "temp_time",
+              "value": "={{ $('Get Session').item.json[\"Temp Time\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2640,
+        14320
+      ],
+      "id": "38e953a8-ef4c-43e1-a7d4-350a73324eb3",
+      "name": "Prepare Ongoing Booking"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "559811e8-30e2-46f6-a2f8-d7b0905c8cf3",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "rightValue": "/cancel",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3536,
+        14336
+      ],
+      "id": "8c5f8cde-0799-4151-a3ab-7e98e2c40d6b",
+      "name": "Is Global Cancel?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list",
+          "cachedResultName": "CRM Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list",
+          "cachedResultName": "Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit#gid=354924237"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "State": "={{ '' }}",
+            "Temp Name": "={{ '' }}",
+            "Temp Phone": "={{ '' }}",
+            "Temp Field": "={{ '' }}",
+            "Temp Date": "={{ '' }}",
+            "Temp Time": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Update ID",
+              "displayName": "Last Update ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pending Action",
+              "displayName": "Pending Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3312,
+        14688
+      ],
+      "id": "2a9e1026-fb6c-491e-84f9-8cfe07f9569d",
+      "name": "Reset on Cancel",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9c6d99c-bef1-41c1-8d8b-f5f89943a9e0",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "772de31f-db3e-4e1c-a23a-b38a697ff686",
+              "name": "text",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f16fa6ad-1288-41ab-9cef-07a8cb4f170e",
+              "name": "State",
+              "value": "init_cancel",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2864,
+        12320
+      ],
+      "id": "0dd28f32-abd1-4be1-be12-c0751057dec0",
+      "name": "Prepare Cancel Data"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GwF7Ipz7I6ydUfzK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GwF7Ipz7I6ydUfzK",
+          "cachedResultName": "Cancel Flow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -2640,
+        12320
+      ],
+      "id": "3633769c-67c2-4972-a26d-c6370be1d42c",
+      "name": "Call Cancel Flow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "24e31f12-8dbb-44a9-ba8e-b8907f5a1c23",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "b6b59dea-629c-44b6-ae97-0505c2310d52",
+              "name": "text",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "cf98f070-e8d5-4497-9607-ad829bc2b4d3",
+              "name": "State",
+              "value": "={{ $('Get Session').item.json.State }}",
+              "type": "string"
+            },
+            {
+              "id": "cd520253-e078-4f4c-8624-7d47845f0f04",
+              "name": "pending_action",
+              "value": "={{ $('Get Session').item.json[\"Pending Action\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3088,
+        14176
+      ],
+      "id": "529d8cff-83bc-4e11-be13-fad3561399b8",
+      "name": "Prepare Ongoing Cancel"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GwF7Ipz7I6ydUfzK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GwF7Ipz7I6ydUfzK",
+          "cachedResultName": "Cancel Flow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        14176
+      ],
+      "id": "a91b43ac-4054-46c1-b3b6-a5df96690e3d",
+      "name": "Call Cancel Flow 2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Оберіть мову / Choose language:",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🇺🇦 Українська",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🇬🇧 English",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3760,
+        14528
+      ],
+      "id": "3a3ee597-acd9-46bc-b8f2-46088fef24d8",
+      "name": "Ask Language",
+      "webhookId": "3f1a0b9f-62d2-4db1-9cd5-4a6c15eb8e7c",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "🇺🇦 Українська",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5524fa34-49f9-4a64-a348-0d4e63d3574c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ua"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "aa4c5832-e4d2-49d3-afe6-3ac9b9cf276f",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "🇬🇧 English",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "en"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2752,
+        14656
+      ],
+      "id": "86a8ebe2-50c7-42bf-93b7-1d42b7d6be66",
+      "name": "Handle Language Choice"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list",
+          "cachedResultName": "CRM Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list",
+          "cachedResultName": "Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit#gid=354924237"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Language": "ua",
+            "State": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Update ID",
+              "displayName": "Last Update ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Action",
+              "displayName": "Pending Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2432,
+        14464
+      ],
+      "id": "533c372f-a2be-4b1f-a4a7-a59bd362d327",
+      "name": "Set Language UA",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Вітаю! 👋 Оберіть дію з меню нижче:",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📝 Залишити заявку",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📅 Записатись на послугу",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📋 Мої записи",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2256,
+        14464
+      ],
+      "id": "3ef20940-adfc-4a43-a4c8-86bfca7183a8",
+      "name": "Send Menu UA",
+      "webhookId": "e709d0fe-c095-472e-9809-ff5a1c37e357",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM",
+          "mode": "list",
+          "cachedResultName": "CRM Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 354924237,
+          "mode": "list",
+          "cachedResultName": "Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zEr6zTovgQSeNGpNKIn-yeXUFJyXTP3vbjbmc2e_DwM/edit#gid=354924237"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Chat ID": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Language": "en",
+            "State": "={{ '' }}"
+          },
+          "matchingColumns": [
+            "Chat ID"
+          ],
+          "schema": [
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Name",
+              "displayName": "Temp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Phone",
+              "displayName": "Temp Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Field",
+              "displayName": "Temp Field",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Date",
+              "displayName": "Temp Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp Time",
+              "displayName": "Temp Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Update ID",
+              "displayName": "Last Update ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GDPR Accepted",
+              "displayName": "GDPR Accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Action",
+              "displayName": "Pending Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2432,
+        14640
+      ],
+      "id": "25c8e082-92c0-4875-985d-89bedd0d25fa",
+      "name": "Set Language EN",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9xyX2goyyFqrSbKe",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Welcome! 👋 Please choose an action from the menu below:",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📝 Leave a request",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📅 Book a service",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📋 My bookings",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2224,
+        14640
+      ],
+      "id": "2c8c3fab-5db2-419a-8b6e-57b9361a7421",
+      "name": "Send Menu EN",
+      "webhookId": "6e18b953-5933-4c91-8870-35e2d57c90f0",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Будь ласка, оберіть мову кнопкою нижче / Please choose a language using the button below",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2336,
+        14832
+      ],
+      "id": "19216fac-7b57-45c7-a943-50bf64523c83",
+      "name": "Invalid Language Input",
+      "webhookId": "0713ddc3-1f02-4124-b90e-616a9a05590a",
+      "credentials": {
+        "telegramApi": {
+          "id": "gnMmeI3XT3yL8SHx",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Drop Duplicate Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drop Duplicate Update": {
+      "main": [
+        [
+          {
+            "node": "Get Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Session": {
+      "main": [
+        [
+          {
+            "node": "Session Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session Exists?": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate DB?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Session": {
+      "main": [
+        [
+          {
+            "node": "Ask Language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate DB?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Mark Update Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Update Processed": {
+      "main": [
+        [
+          {
+            "node": "Is Global Cancel?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route State": {
+      "main": [
+        [
+          {
+            "node": "Route Menu Choice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle GDPR Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle GDPR Booking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Ongoing Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Ongoing Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Ongoing Booking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Ongoing Booking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Ongoing Cancel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Language Choice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Unknown Input Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Menu Choice": {
+      "main": [
+        [
+          {
+            "node": "Check GDPR Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check GDPR Booking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Cancel Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check GDPR Lead": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set await_gdpr_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check GDPR Booking": {
+      "main": [
+        [
+          {
+            "node": "Prepare Booking Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set await_gdpr_booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set await_gdpr_lead": {
+      "main": [
+        [
+          {
+            "node": "Ask GDPR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set await_gdpr_booking": {
+      "main": [
+        [
+          {
+            "node": "Ask GDPR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle GDPR Lead": {
+      "main": [
+        [
+          {
+            "node": "Set init_lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reset On Decline",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid GDPR Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle GDPR Booking": {
+      "main": [
+        [
+          {
+            "node": "Set init_booking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reset On Decline",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid GDPR Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set init_lead": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set init_booking": {
+      "main": [
+        [
+          {
+            "node": "Prepare Booking Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset On Decline": {
+      "main": [
+        [
+          {
+            "node": "Consent Declined Msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Call Lead Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Booking Data": {
+      "main": [
+        [
+          {
+            "node": "Call Booking Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Ongoing Lead": {
+      "main": [
+        [
+          {
+            "node": "Call Lead Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Ongoing Booking": {
+      "main": [
+        [
+          {
+            "node": "Call Booking Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Global Cancel?": {
+      "main": [
+        [
+          {
+            "node": "Reset on Cancel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset on Cancel": {
+      "main": [
+        [
+          {
+            "node": "Send Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Cancel Data": {
+      "main": [
+        [
+          {
+            "node": "Call Cancel Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Ongoing Cancel": {
+      "main": [
+        [
+          {
+            "node": "Call Cancel Flow 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Language Choice": {
+      "main": [
+        [
+          {
+            "node": "Set Language UA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Language EN",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Language Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Language UA": {
+      "main": [
+        [
+          {
+            "node": "Send Menu UA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Language EN": {
+      "main": [
+        [
+          {
+            "node": "Send Menu EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Stockholm",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "6jnon7nvbQx8yusB"
+  },
+  "versionId": "911fe0f6-dd97-47d7-9403-eda3aaed7d59",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bf0c981cadaa1cf4940205cfef5f7c672982f38de4f04bf5a516e45df70e03d4"
+  },
+  "nodeGroups": [],
+  "id": "Tbczv0YT10WufV5P",
+  "tags": []
+}
